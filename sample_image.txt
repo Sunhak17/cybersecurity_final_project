@@ -1,0 +1,8 @@
+# This is a placeholder for a small image file
+# In real implementation, this would be a .jpg or .png file
+# The malicious code will use this as a decoy file
+
+Sample Image Content - Replace with actual image file
+Width: 800px
+Height: 600px
+Type: Placeholder
