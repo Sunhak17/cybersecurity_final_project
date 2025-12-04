@@ -1,442 +1,374 @@
 """
-ANTI-MALICIOUS CODE DEFENDER
-Educational demonstration of malware detection and removal
-
-This program detects and blocks the malicious email sender:
-- Anti-Delivery: Detects GUI programs creating hidden folders
-- Anti-Auto-Run: Removes startup and registry persistence
-- Anti-Spreading: Blocks network spreading attempts
-
-Total: 9 functions working together as one defense system
+Anti-Spyware Defender Scanner - Main Application
+Comprehensive spyware detection and removal tool
 """
 
-import os
+import tkinter as tk
+from tkinter import ttk, scrolledtext
 import sys
+import os
+import threading
 import time
-import winreg
-import psutil
-import shutil
-from pathlib import Path
-from datetime import datetime
 
-# ============================================================================
-# STAGE 1: ANTI-DELIVERY (Functions 1-3)
-# ============================================================================
+# Add paths for importing all defender functions
+sys.path.append(os.path.join(os.path.dirname(__file__), 'anti_delivery'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'anti_auto_run'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'anti_spreading'))
 
-def monitor_running_processes():
-    """
-    Function 1: Monitor processes for suspicious dual behavior
-    Detects programs showing GUI while creating hidden folders
-    """
-    print("\n[Defender] Function 1: Monitoring running processes...")
-    
-    suspicious_processes = []
-    
-    try:
-        for proc in psutil.process_iter(['pid', 'name', 'exe']):
-            try:
-                # Check if process has a window (GUI)
-                proc_info = proc.info
-                
-                # Look for suspicious process names
-                if proc_info['name'] and ('email' in proc_info['name'].lower() or 
-                                         'sender' in proc_info['name'].lower() or
-                                         'update' in proc_info['name'].lower()):
-                    suspicious_processes.append({
-                        'pid': proc_info['pid'],
-                        'name': proc_info['name'],
-                        'exe': proc_info['exe']
-                    })
-                    print(f"[Defender]   Found suspicious process: {proc_info['name']} (PID: {proc_info['pid']})")
-            except (psutil.NoSuchProcess, psutil.AccessDenied):
-                pass
-        
-        if not suspicious_processes:
-            print("[Defender]   No suspicious processes detected")
-        
-        return suspicious_processes
-    except Exception as e:
-        print(f"[Defender] Error monitoring processes: {e}")
-        return []
+# Import all defender functions
+from function1_detect_spyware import detect_spyware_processes
+from function2_scan_spyware_files import scan_spyware_files
+from function3_quarantine_spyware import quarantine_spyware
+from function4_detect_persistence import detect_spyware_persistence
+from function5_scan_registry_spyware import scan_registry_spyware
+from function6_remove_spyware_persistence import remove_spyware_persistence
+from function7_monitor_exfiltration import monitor_exfiltration
+from function8_block_spreading import block_spyware_spreading
+from function9_generate_report import generate_security_report
 
-def scan_hidden_folders():
-    """
-    Function 2: Scan AppData for newly created hidden folders
-    Detects folders created by malicious programs
-    """
-    print("[Defender] Function 2: Scanning for hidden folders...")
-    
-    suspicious_folders = []
-    
-    try:
-        appdata = os.getenv('APPDATA')
-        
-        # Known suspicious folder names used by malware
-        suspicious_names = [
-            'WindowsUpdateService',
-            'SystemService',
-            'SecurityUpdate',
-            'MicrosoftUpdate'
-        ]
-        
-        # Scan AppData
-        for item in os.listdir(appdata):
-            item_path = os.path.join(appdata, item)
-            
-            if os.path.isdir(item_path):
-                # Check if folder name is suspicious
-                if item in suspicious_names:
-                    # Check if folder is hidden
-                    attrs = os.stat(item_path).st_file_attributes
-                    if attrs & 0x02:  # FILE_ATTRIBUTE_HIDDEN
-                        suspicious_folders.append(item_path)
-                        print(f"[Defender]   Found suspicious hidden folder: {item_path}")
-                    else:
-                        suspicious_folders.append(item_path)
-                        print(f"[Defender]   Found suspicious folder: {item_path}")
-        
-        if not suspicious_folders:
-            print("[Defender]   No suspicious hidden folders detected")
-        
-        return suspicious_folders
-    except Exception as e:
-        print(f"[Defender] Error scanning hidden folders: {e}")
-        return []
 
-def analyze_and_quarantine():
-    """
-    Function 3: Analyze and quarantine suspicious files
-    Terminates malicious processes and moves files to quarantine
-    """
-    print("[Defender] Function 3: Analyzing and quarantining threats...")
+class DefenderScannerGUI:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("Anti-Spyware Defender Scanner")
+        self.root.geometry("1000x700")
+        self.root.configure(bg='#1e1e1e')
+        
+        # Make window non-resizable for consistent layout
+        self.root.resizable(False, False)
+        
+        # Scan results storage
+        self.scan_results = {}
+        self.threats_found = 0
+        
+        self.create_gui()
     
-    quarantine_folder = os.path.join(os.getenv('TEMP'), 'MalwareQuarantine')
-    quarantined_count = 0
+    def create_gui(self):
+        # Title Frame
+        title_frame = tk.Frame(self.root, bg='#0078d4', height=80)
+        title_frame.pack(fill='x', padx=0, pady=0)
+        title_frame.pack_propagate(False)
+        
+        title_label = tk.Label(title_frame, 
+                              text="🛡️ ANTI-SPYWARE DEFENDER SCANNER",
+                              font=('Segoe UI', 24, 'bold'),
+                              bg='#0078d4',
+                              fg='white')
+        title_label.pack(pady=20)
+        
+        # Status Frame
+        status_frame = tk.Frame(self.root, bg='#2d2d2d', height=60)
+        status_frame.pack(fill='x', padx=10, pady=(10, 5))
+        status_frame.pack_propagate(False)
+        
+        self.status_label = tk.Label(status_frame,
+                                     text="System Status: Ready to scan",
+                                     font=('Segoe UI', 14),
+                                     bg='#2d2d2d',
+                                     fg='#00ff00')
+        self.status_label.pack(pady=15)
+        
+        # Progress Frame
+        progress_frame = tk.Frame(self.root, bg='#1e1e1e')
+        progress_frame.pack(fill='x', padx=10, pady=5)
+        
+        self.progress_bar = ttk.Progressbar(progress_frame,
+                                           length=980,
+                                           mode='determinate',
+                                           style='Custom.Horizontal.TProgressbar')
+        self.progress_bar.pack(pady=5)
+        
+        self.progress_label = tk.Label(progress_frame,
+                                       text="",
+                                       font=('Segoe UI', 10),
+                                       bg='#1e1e1e',
+                                       fg='white')
+        self.progress_label.pack(pady=2)
+        
+        # Console Output
+        console_frame = tk.Frame(self.root, bg='#1e1e1e')
+        console_frame.pack(fill='both', expand=True, padx=10, pady=5)
+        
+        console_label = tk.Label(console_frame,
+                                text="Scan Console:",
+                                font=('Segoe UI', 11, 'bold'),
+                                bg='#1e1e1e',
+                                fg='white',
+                                anchor='w')
+        console_label.pack(fill='x', pady=(5, 2))
+        
+        self.console = scrolledtext.ScrolledText(console_frame,
+                                                 height=18,
+                                                 font=('Consolas', 9),
+                                                 bg='#0c0c0c',
+                                                 fg='#00ff00',
+                                                 insertbackground='white',
+                                                 wrap='word')
+        self.console.pack(fill='both', expand=True)
+        self.console.insert('1.0', "Anti-Spyware Defender Scanner v1.0\n")
+        self.console.insert('end', "Ready to perform comprehensive system scan...\n")
+        self.console.insert('end', "="*80 + "\n")
+        
+        # Buttons Frame
+        button_frame = tk.Frame(self.root, bg='#1e1e1e')
+        button_frame.pack(fill='x', padx=10, pady=10)
+        
+        self.scan_button = tk.Button(button_frame,
+                                     text="START SCAN",
+                                     font=('Segoe UI', 12, 'bold'),
+                                     bg='#0078d4',
+                                     fg='white',
+                                     width=20,
+                                     height=2,
+                                     cursor='hand2',
+                                     command=self.start_scan)
+        self.scan_button.pack(side='left', padx=5)
+        
+        self.quarantine_button = tk.Button(button_frame,
+                                          text="QUARANTINE THREATS",
+                                          font=('Segoe UI', 12, 'bold'),
+                                          bg='#ff8c00',
+                                          fg='white',
+                                          width=20,
+                                          height=2,
+                                          cursor='hand2',
+                                          state='disabled',
+                                          command=self.quarantine_threats)
+        self.quarantine_button.pack(side='left', padx=5)
+        
+        self.remove_button = tk.Button(button_frame,
+                                       text="REMOVE PERSISTENCE",
+                                       font=('Segoe UI', 12, 'bold'),
+                                       bg='#dc3545',
+                                       fg='white',
+                                       width=20,
+                                       height=2,
+                                       cursor='hand2',
+                                       state='disabled',
+                                       command=self.remove_persistence)
+        self.remove_button.pack(side='left', padx=5)
+        
+        self.clear_button = tk.Button(button_frame,
+                                      text="CLEAR LOG",
+                                      font=('Segoe UI', 12, 'bold'),
+                                      bg='#6c757d',
+                                      fg='white',
+                                      width=15,
+                                      height=2,
+                                      cursor='hand2',
+                                      command=self.clear_console)
+        self.clear_button.pack(side='left', padx=5)
+        
+        # Style configuration for progress bar
+        style = ttk.Style()
+        style.theme_use('default')
+        style.configure('Custom.Horizontal.TProgressbar',
+                       background='#0078d4',
+                       troughcolor='#2d2d2d',
+                       bordercolor='#1e1e1e',
+                       lightcolor='#0078d4',
+                       darkcolor='#0078d4')
     
-    try:
-        # Create quarantine folder
-        if not os.path.exists(quarantine_folder):
-            os.makedirs(quarantine_folder)
-            print(f"[Defender]   Created quarantine folder: {quarantine_folder}")
-        
-        # Get suspicious processes and folders
-        suspicious_procs = monitor_running_processes()
-        suspicious_folders = scan_hidden_folders()
-        
-        # Terminate suspicious processes
-        for proc in suspicious_procs:
-            try:
-                p = psutil.Process(proc['pid'])
-                p.terminate()
-                p.wait(timeout=5)
-                print(f"[Defender]   Terminated process: {proc['name']} (PID: {proc['pid']})")
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.TimeoutExpired) as e:
-                print(f"[Defender]   Could not terminate process {proc['pid']}: {e}")
-        
-        # Quarantine suspicious folders
-        for folder in suspicious_folders:
-            try:
-                folder_name = os.path.basename(folder)
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                quarantine_path = os.path.join(quarantine_folder, f"{folder_name}_{timestamp}")
-                
-                shutil.move(folder, quarantine_path)
-                print(f"[Defender]   Quarantined: {folder} -> {quarantine_path}")
-                quarantined_count += 1
-            except Exception as e:
-                print(f"[Defender]   Error quarantining {folder}: {e}")
-        
-        print(f"[Defender]   Total items quarantined: {quarantined_count}")
-        return quarantined_count
-    except Exception as e:
-        print(f"[Defender] Error in quarantine process: {e}")
-        return 0
-
-# ============================================================================
-# STAGE 2: ANTI-AUTO-RUN (Functions 4-6)
-# ============================================================================
-
-def scan_startup_folder():
-    """
-    Function 4: Scan Startup folder for suspicious shortcuts
-    Detects shortcuts created by malware
-    """
-    print("\n[Defender] Function 4: Scanning Startup folder...")
+    def log_to_console(self, message):
+        """Add message to console output"""
+        self.console.insert('end', message + '\n')
+        self.console.see('end')
+        self.root.update()
     
-    suspicious_shortcuts = []
+    def update_progress(self, value, message):
+        """Update progress bar and label"""
+        self.progress_bar['value'] = value
+        self.progress_label.config(text=message)
+        self.root.update()
     
-    try:
-        startup_folder = os.path.join(os.getenv('APPDATA'), 
-                                     r'Microsoft\Windows\Start Menu\Programs\Startup')
-        
-        if not os.path.exists(startup_folder):
-            print("[Defender]   Startup folder not found")
-            return []
-        
-        # Scan for .lnk files
-        for item in os.listdir(startup_folder):
-            if item.endswith('.lnk'):
-                shortcut_path = os.path.join(startup_folder, item)
-                
-                # Check for suspicious names
-                suspicious_keywords = ['WindowsUpdate', 'SystemService', 'SecurityUpdate']
-                if any(keyword in item for keyword in suspicious_keywords):
-                    suspicious_shortcuts.append(shortcut_path)
-                    print(f"[Defender]   Found suspicious shortcut: {item}")
-        
-        if not suspicious_shortcuts:
-            print("[Defender]   No suspicious shortcuts detected")
-        
-        return suspicious_shortcuts
-    except Exception as e:
-        print(f"[Defender] Error scanning Startup folder: {e}")
-        return []
-
-def scan_registry_run_keys():
-    """
-    Function 5: Scan registry Run keys for malicious entries
-    Checks HKCU and HKLM Run keys
-    """
-    print("[Defender] Function 5: Scanning registry Run keys...")
+    def update_status(self, message, color='#00ff00'):
+        """Update status label"""
+        self.status_label.config(text=message, fg=color)
+        self.root.update()
     
-    suspicious_entries = []
+    def clear_console(self):
+        """Clear console output"""
+        self.console.delete('1.0', 'end')
+        self.log_to_console("Console cleared.")
+        self.log_to_console("="*80)
     
-    try:
-        # Scan HKEY_CURRENT_USER
-        key_path = r'Software\Microsoft\Windows\CurrentVersion\Run'
+    def start_scan(self):
+        """Start comprehensive system scan"""
+        # Disable buttons during scan
+        self.scan_button.config(state='disabled')
+        self.quarantine_button.config(state='disabled')
+        self.remove_button.config(state='disabled')
+        
+        # Reset results
+        self.scan_results = {}
+        self.threats_found = 0
+        
+        # Run scan in thread
+        scan_thread = threading.Thread(target=self.perform_scan)
+        scan_thread.daemon = True
+        scan_thread.start()
+    
+    def perform_scan(self):
+        """Execute all 9 defender functions"""
         try:
-            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_READ)
-            i = 0
-            while True:
-                try:
-                    name, value, _ = winreg.EnumValue(key, i)
-                    
-                    # Check for suspicious entries
-                    suspicious_keywords = ['WindowsUpdate', 'SystemService', 'SecurityUpdate']
-                    if any(keyword in name for keyword in suspicious_keywords) or \
-                       any(keyword in value for keyword in suspicious_keywords):
-                        suspicious_entries.append({
-                            'hive': 'HKCU',
-                            'key': key_path,
-                            'name': name,
-                            'value': value
-                        })
-                        print(f"[Defender]   Found suspicious registry entry: {name} -> {value}")
-                    
-                    i += 1
-                except OSError:
-                    break
-            winreg.CloseKey(key)
-        except FileNotFoundError:
-            print("[Defender]   Run key not found in HKCU")
-        
-        if not suspicious_entries:
-            print("[Defender]   No suspicious registry entries detected")
-        
-        return suspicious_entries
-    except Exception as e:
-        print(f"[Defender] Error scanning registry: {e}")
-        return []
-
-def remove_persistence_mechanisms():
-    """
-    Function 6: Remove all persistence mechanisms
-    Deletes startup shortcuts, registry keys, and hidden folders
-    """
-    print("[Defender] Function 6: Removing persistence mechanisms...")
-    
-    removed_count = 0
-    
-    try:
-        # Remove startup shortcuts
-        shortcuts = scan_startup_folder()
-        for shortcut in shortcuts:
-            try:
-                os.remove(shortcut)
-                print(f"[Defender]   Removed shortcut: {shortcut}")
-                removed_count += 1
-            except Exception as e:
-                print(f"[Defender]   Error removing shortcut: {e}")
-        
-        # Remove registry entries
-        entries = scan_registry_run_keys()
-        for entry in entries:
-            try:
-                key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, entry['key'], 0, winreg.KEY_SET_VALUE)
-                winreg.DeleteValue(key, entry['name'])
-                winreg.CloseKey(key)
-                print(f"[Defender]   Removed registry entry: {entry['name']}")
-                removed_count += 1
-            except Exception as e:
-                print(f"[Defender]   Error removing registry entry: {e}")
-        
-        # Hidden folders already quarantined in Stage 1
-        
-        print(f"[Defender]   Total persistence mechanisms removed: {removed_count}")
-        return removed_count
-    except Exception as e:
-        print(f"[Defender] Error removing persistence: {e}")
-        return 0
-
-# ============================================================================
-# STAGE 3: ANTI-SPREADING (Functions 7-9)
-# ============================================================================
-
-def monitor_network_file_copies():
-    """
-    Function 7: Monitor file copy operations to network shares
-    Detects programs copying themselves to shares
-    """
-    print("\n[Defender] Function 7: Monitoring network file copies...")
-    
-    try:
-        # In a real implementation, this would use file system monitoring
-        # For demonstration, we simulate detection
-        print("[Defender]   Network monitoring active (simulated)")
-        print("[Defender]   Would detect file copies to network shares in real-time")
-        
-        # Check for common malicious file names on shares
-        suspicious_patterns = [
-            'PayrollReport*.exe',
-            'CompanyPhotos.exe',
-            'ImportantDocument.exe',
-            'QuickFix.exe'
-        ]
-        
-        print(f"[Defender]   Watching for suspicious files: {', '.join(suspicious_patterns)}")
-        return True
-    except Exception as e:
-        print(f"[Defender] Error monitoring network: {e}")
-        return False
-
-def scan_network_shares():
-    """
-    Function 8: Scan accessible network shares for malware
-    Detects malicious files already spread to shares
-    """
-    print("[Defender] Function 8: Scanning network shares...")
-    
-    found_threats = []
-    
-    try:
-        # SIMULATION: In a real scenario, this would scan actual network shares
-        # For safety, we only simulate the scan
-        simulated_shares = [
-            r"\\DESKTOP-PC1\SharedDocs",
-            r"\\LAPTOP-USER2\Public",
-            r"\\FILESERVER\Downloads"
-        ]
-        
-        print(f"[Defender]   Scanning {len(simulated_shares)} network locations (simulated)...")
-        
-        # Simulate finding threats
-        suspicious_files = [
-            "PayrollReport_2025.exe",
-            "CompanyPhotos.exe"
-        ]
-        
-        for share in simulated_shares:
-            for filename in suspicious_files:
-                threat_path = os.path.join(share, filename)
-                found_threats.append(threat_path)
-                print(f"[Defender]   Found suspicious file: {threat_path} (simulated)")
-        
-        if not found_threats:
-            print("[Defender]   No threats found on network shares")
-        
-        return found_threats
-    except Exception as e:
-        print(f"[Defender] Error scanning shares: {e}")
-        return []
-
-def block_and_clean_network():
-    """
-    Function 9: Block spreading and clean network shares
-    Removes malicious files from shares and alerts users
-    """
-    print("[Defender] Function 9: Blocking and cleaning network...")
-    
-    cleaned_count = 0
-    
-    try:
-        # Get list of threats from scan
-        threats = scan_network_shares()
-        
-        if threats:
-            print(f"[Defender]   Cleaning {len(threats)} threats from network...")
+            self.log_to_console("\n" + "="*80)
+            self.log_to_console("STARTING COMPREHENSIVE SPYWARE SCAN")
+            self.log_to_console("="*80 + "\n")
             
-            for threat in threats:
-                # SAFETY: We don't actually delete from real network shares
-                # Just simulate the action
-                print(f"[Defender]   Would remove: {threat} (simulated)")
-                cleaned_count += 1
+            self.update_status("Scanning system...", '#ffff00')
+            self.update_progress(0, "Initializing scan...")
+            time.sleep(0.5)
             
-            # Generate alert
-            print(f"\n[Defender] === NETWORK ALERT ===")
-            print(f"[Defender] Detected and blocked malware spreading attempt")
-            print(f"[Defender] Threat: Email Sender Utility (malicious)")
-            print(f"[Defender] Action: Removed {cleaned_count} copies from network")
-            print(f"[Defender] Status: Network is now clean")
-            print(f"[Defender] =====================\n")
-        else:
-            print("[Defender]   Network is clean, no action needed")
+            # Phase 1: Anti-Delivery (Functions 1-3)
+            self.log_to_console("\n[PHASE 1] ANTI-DELIVERY SCAN")
+            self.log_to_console("-" * 80)
+            
+            # Function 1: Detect spyware processes
+            self.update_progress(11, "Scanning for spyware processes...")
+            processes = detect_spyware_processes()
+            self.scan_results['suspicious_processes'] = processes
+            if processes:
+                self.threats_found += len(processes)
+                for proc in processes:
+                    self.log_to_console(f"⚠ THREAT: {proc['name']} (PID: {proc['pid']})")
+            
+            # Function 2: Scan for spyware files
+            self.update_progress(22, "Scanning for spyware files...")
+            files = scan_spyware_files()
+            self.scan_results['spyware_files'] = files
+            if files.get('total_files', 0) > 0:
+                self.threats_found += files.get('total_files', 0)
+                self.log_to_console(f"⚠ THREAT: Found {files.get('total_files', 0)} spyware files")
+            
+            # Function 3 will be called by button
+            self.log_to_console("[INFO] Quarantine function ready (use QUARANTINE button)")
+            self.update_progress(33, "Anti-delivery scan complete")
+            
+            # Phase 2: Anti-Auto-Run (Functions 4-6)
+            self.log_to_console("\n[PHASE 2] ANTI-AUTO-RUN SCAN")
+            self.log_to_console("-" * 80)
+            
+            # Function 4: Detect startup persistence
+            self.update_progress(44, "Checking startup folder...")
+            startup = detect_spyware_persistence()
+            self.scan_results['startup_threats'] = startup
+            if startup:
+                self.threats_found += len(startup)
+                for item in startup:
+                    self.log_to_console(f"⚠ THREAT: Startup persistence - {item}")
+            
+            # Function 5: Scan registry
+            self.update_progress(55, "Scanning registry for spyware...")
+            registry = scan_registry_spyware()
+            self.scan_results['registry_threats'] = registry
+            if registry:
+                self.threats_found += len(registry)
+                for item in registry:
+                    self.log_to_console(f"⚠ THREAT: Registry entry - {item['name']}")
+            
+            # Function 6 will be called by button
+            self.log_to_console("[INFO] Persistence removal ready (use REMOVE button)")
+            self.update_progress(66, "Anti-auto-run scan complete")
+            
+            # Phase 3: Anti-Spreading (Functions 7-9)
+            self.log_to_console("\n[PHASE 3] ANTI-SPREADING SCAN")
+            self.log_to_console("-" * 80)
+            
+            # Function 7: Monitor exfiltration
+            self.update_progress(77, "Monitoring data exfiltration...")
+            exfil = monitor_exfiltration()
+            self.scan_results['exfiltration'] = exfil
+            if exfil.get('total_indicators', 0) > 0:
+                self.threats_found += exfil.get('total_indicators', 0)
+                self.log_to_console(f"⚠ THREAT: {exfil.get('total_indicators', 0)} exfiltration indicators")
+            
+            # Function 8: Block spreading
+            self.update_progress(88, "Blocking spyware spreading...")
+            blocking = block_spyware_spreading()
+            self.scan_results['spreading_blocked'] = blocking
+            self.log_to_console(f"✓ Protected {blocking.get('network_shares_protected', 0)} network shares")
+            
+            # Function 9: Generate report
+            self.update_progress(95, "Generating security report...")
+            report_data = {
+                'threats_found': self.threats_found,
+                'scan_results': self.scan_results
+            }
+            report_path = generate_security_report(report_data)
+            self.scan_results['report_path'] = report_path
+            self.log_to_console(f"✓ Report saved: {report_path}")
+            
+            # Complete
+            self.update_progress(100, "Scan complete!")
+            
+            # Final status
+            self.log_to_console("\n" + "="*80)
+            self.log_to_console(f"SCAN COMPLETE - {self.threats_found} THREATS DETECTED")
+            self.log_to_console("="*80 + "\n")
+            
+            if self.threats_found > 0:
+                self.update_status(f"⚠ WARNING: {self.threats_found} threats detected!", '#ff0000')
+                self.quarantine_button.config(state='normal')
+                self.remove_button.config(state='normal')
+                self.log_to_console("Use QUARANTINE THREATS and REMOVE PERSISTENCE buttons to clean system.")
+            else:
+                self.update_status("✓ System Clean - No threats detected", '#00ff00')
+                self.log_to_console("✓ Your system is clean!")
+            
+        except Exception as e:
+            self.log_to_console(f"\n[ERROR] Scan failed: {e}")
+            self.update_status("Scan failed", '#ff0000')
+        finally:
+            self.scan_button.config(state='normal')
+    
+    def quarantine_threats(self):
+        """Quarantine detected spyware"""
+        self.log_to_console("\n" + "="*80)
+        self.log_to_console("QUARANTINING THREATS")
+        self.log_to_console("="*80)
         
-        return cleaned_count
-    except Exception as e:
-        print(f"[Defender] Error cleaning network: {e}")
-        return 0
+        try:
+            processes = self.scan_results.get('suspicious_processes', [])
+            files = self.scan_results.get('spyware_files', {})
+            
+            result = quarantine_spyware(processes, files)
+            
+            self.log_to_console(f"✓ Terminated {result.get('processes_killed', 0)} processes")
+            self.log_to_console(f"✓ Quarantined {result.get('files_quarantined', 0)} files")
+            self.log_to_console(f"✓ Report: {result.get('report_path', 'N/A')}")
+            
+            self.quarantine_button.config(state='disabled')
+            self.update_status("Threats quarantined successfully", '#00ff00')
+        except Exception as e:
+            self.log_to_console(f"[ERROR] Quarantine failed: {e}")
+    
+    def remove_persistence(self):
+        """Remove spyware persistence mechanisms"""
+        self.log_to_console("\n" + "="*80)
+        self.log_to_console("REMOVING PERSISTENCE MECHANISMS")
+        self.log_to_console("="*80)
+        
+        try:
+            shortcuts = self.scan_results.get('startup_threats', [])
+            registry = self.scan_results.get('registry_threats', [])
+            
+            result = remove_spyware_persistence(shortcuts, registry)
+            
+            self.log_to_console(f"✓ Removed {result.get('shortcuts_removed', 0)} startup items")
+            self.log_to_console(f"✓ Removed {result.get('registry_removed', 0)} registry entries")
+            total = result.get('shortcuts_removed', 0) + result.get('registry_removed', 0)
+            self.log_to_console(f"✓ Total removed: {total}")
+            
+            self.remove_button.config(state='disabled')
+            self.update_status("Persistence removed successfully", '#00ff00')
+        except Exception as e:
+            self.log_to_console(f"[ERROR] Removal failed: {e}")
+    
+    def run(self):
+        """Start the GUI application"""
+        self.root.mainloop()
 
-# ============================================================================
-# MAIN DEFENSE EXECUTION
-# ============================================================================
-
-def run_full_scan():
-    """Execute all 9 defender functions in sequence"""
-    print("\n" + "="*60)
-    print("ANTI-MALICIOUS DEFENDER - FULL SYSTEM SCAN")
-    print("="*60)
-    
-    start_time = time.time()
-    
-    # Stage 1: Anti-Delivery
-    print("\n[Defender] === STAGE 1: ANTI-DELIVERY ===")
-    quarantined = analyze_and_quarantine()
-    
-    # Stage 2: Anti-Auto-Run
-    print("\n[Defender] === STAGE 2: ANTI-AUTO-RUN ===")
-    removed = remove_persistence_mechanisms()
-    
-    # Stage 3: Anti-Spreading
-    print("\n[Defender] === STAGE 3: ANTI-SPREADING ===")
-    monitor_network_file_copies()
-    cleaned = block_and_clean_network()
-    
-    # Summary
-    elapsed_time = time.time() - start_time
-    print("\n" + "="*60)
-    print("SCAN COMPLETE")
-    print("="*60)
-    print(f"Time elapsed: {elapsed_time:.2f} seconds")
-    print(f"Items quarantined: {quarantined}")
-    print(f"Persistence mechanisms removed: {removed}")
-    print(f"Network threats cleaned: {cleaned}")
-    print("="*60 + "\n")
 
 if __name__ == "__main__":
-    print("\n" + "="*60)
-    print("ANTI-MALICIOUS CODE DEFENDER")
-    print("Educational demonstration of malware detection and removal")
-    print("="*60)
-    
-    try:
-        run_full_scan()
-        
-        print("\n[Defender] System protection active")
-        print("[Defender] All threats have been neutralized")
-        
-    except KeyboardInterrupt:
-        print("\n\n[Defender] Scan interrupted by user")
-    except Exception as e:
-        print(f"\n[Defender] Error during scan: {e}")
-    
-    print("\n[Defender] Defender terminated")
+    app = DefenderScannerGUI()
+    app.run()
