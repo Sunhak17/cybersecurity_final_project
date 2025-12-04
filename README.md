@@ -1,226 +1,336 @@
-# Cybersecurity Project: Malicious Code vs Anti-Malicious Code
+# SPYWARE ATTACK & DEFENSE DEMONSTRATION
+**Educational Cybersecurity Project**
 
-## ⚠️ EDUCATIONAL PURPOSE ONLY
-This project is for educational demonstration in a controlled lab environment. Do NOT use these techniques maliciously or deploy on production systems.
-
----
-
-## 📋 Project Overview
-
-This project demonstrates a complete malware attack chain and its corresponding defense mechanisms:
-
-### **Attacker Side: Malicious Email Sender (9 Functions)**
-- **Delivery Stage (3 functions):** Shows GUI while creating hidden folders
-- **Auto-Run Stage (3 functions):** Adds persistence via startup and registry
-- **Spreading Stage (3 functions):** Replicates to network shares
-
-### **Defender Side: Anti-Malicious Scanner (9 Functions)**
-- **Anti-Delivery (3 functions):** Detects and quarantines hidden threats
-- **Anti-Auto-Run (3 functions):** Removes persistence mechanisms
-- **Anti-Spreading (3 functions):** Blocks network spreading
+⚠️ **WARNING: FOR EDUCATIONAL USE ONLY IN VIRTUAL MACHINE ENVIRONMENT**
 
 ---
 
-## 📁 Project Structure
+## PROJECT OVERVIEW
+
+This project demonstrates comprehensive spyware attack techniques and their corresponding defense mechanisms. It maintains a strict 3x3 structure: **3 purposes × 3 functions = 9 functions** on both attack and defense sides.
+
+### 📊 Attack Scenario: Professional Spyware
+- **Delivery**: Victim receives fake "System Security Scanner" with professional GUI
+- **Auto-Run (Data Collection)**: Spyware collects system info, files, installed apps
+- **Spreading**: Data exfiltration and network propagation
+
+### 🛡️ Defense Scenario: Anti-Spyware Scanner
+- **Anti-Delivery**: Detects spyware processes and malicious files
+- **Anti-Auto-Run**: Removes persistence mechanisms (startup + registry)
+- **Anti-Spreading**: Blocks data exfiltration and network spreading
+
+---
+
+## 🏗️ PROJECT STRUCTURE
 
 ```
 Project/
-├── PROPOSAL.md                      # Detailed project proposal
-├── malicious_email_sender.py        # Main malicious code (9 functions)
-├── defender_scanner.py              # Main anti-malicious code (9 functions)
-├── cleanup.py                       # Cleanup utility
-└── README.md                        # This file
+│
+├── malicious_code/                    # SPYWARE ATTACK SIDE
+│   ├── spyware_main.py                # Main spyware executable (professional GUI)
+│   │
+│   ├── delivery/                      # PURPOSE 1: DELIVERY
+│   │   ├── technique1/
+│   │   │   └── function1_spyware_gui.py         # Function 1: Fake security GUI
+│   │   └── technique2/
+│   │       ├── function2_install_spyware.py     # Function 2: Install to hidden folder
+│   │       └── function3_hide_spyware.py        # Function 3: Hide executable
+│   │
+│   ├── auto_run/                      # PURPOSE 2: AUTO-RUN (DATA COLLECTION)
+│   │   ├── technique1/
+│   │   │   └── function4_collect_data.py        # Function 4: Collect victim data
+│   │   └── technique2/
+│   │       ├── function5_persistence_startup.py # Function 5: Startup folder
+│   │       └── function6_persistence_registry.py# Function 6: Registry key
+│   │
+│   └── spreading/                     # PURPOSE 3: SPREADING
+│       ├── technique1/
+│       │   └── function7_scan_network.py        # Function 7: Network scanning
+│       └── technique2/
+│           ├── function8_spread_spyware.py      # Function 8: Network replication
+│           └── function9_exfiltrate_report.py   # Function 9: Data exfiltration
+│
+└── anti_malicious_code/               # DEFENSE SIDE
+    ├── defender_scanner.py            # Main defender GUI (comprehensive scanner)
+    │
+    ├── anti_delivery/                 # PURPOSE 1: ANTI-DELIVERY
+    │   ├── function1_detect_spyware.py          # Function 1: Process detection
+    │   ├── function2_scan_spyware_files.py      # Function 2: File scanning
+    │   └── function3_quarantine_spyware.py      # Function 3: Quarantine threats
+    │
+    ├── anti_auto_run/                 # PURPOSE 2: ANTI-AUTO-RUN
+    │   ├── function4_detect_persistence.py      # Function 4: Startup detection
+    │   ├── function5_scan_registry_spyware.py   # Function 5: Registry scanning
+    │   └── function6_remove_spyware_persistence.py # Function 6: Remove persistence
+    │
+    └── anti_spreading/                # PURPOSE 3: ANTI-SPREADING
+        ├── function7_monitor_exfiltration.py    # Function 7: Monitor exfiltration
+        ├── function8_block_spreading.py         # Function 8: Block spreading
+        └── function9_generate_report.py         # Function 9: Security report
 ```
 
 ---
 
-## 🚀 How to Use
+## 🚀 USAGE INSTRUCTIONS
 
-### **1. Run the Malicious Code (Attacker Demo)**
+### **PREREQUISITE: VMware Environment**
+- ✅ Run ONLY in VMware virtual machine
+- ✅ Windows OS with Python 3.x installed
+- ✅ Install required library: `pip install psutil`
 
-```powershell
-python malicious_email_sender.py
-```
+### **Running the Spyware Attack**
 
-**What happens:**
-1. A GUI window appears asking for your email
-2. Enter any email address and click "Send Test Email"
-3. **Behind the scenes:**
-   - Hidden folder created in `%APPDATA%\WindowsUpdateService`
-   - Executable copied to hidden location
-   - Startup shortcut added
-   - Registry Run key added
-   - Network spreading simulated
+1. Navigate to malicious_code directory:
+   ```powershell
+   cd "c:\Users\TUF\Documents\Year3\Term 1\Cybersecurity\Project\malicious_code"
+   ```
 
-**User Experience:**
-- User only sees the email GUI
-- Sees "Email sent successfully!" message
-- Unaware of malicious activities in background
+2. Run the spyware main application:
+   ```powershell
+   python spyware_main.py
+   ```
+
+3. **What happens:**
+   - Professional "System Security Scanner" GUI appears
+   - Victim clicks "Start Security Scan"
+   - Behind the scenes: All 9 spyware functions execute
+   - Installs to: `%APPDATA%\SystemSecurityService`
+   - Creates persistence: Startup shortcut + Registry key
+   - Collects data: System info, files, apps → JSON
+   - Simulates: Network scanning and data exfiltration
+
+### **Running the Defense Scanner**
+
+1. Navigate to anti_malicious_code directory:
+   ```powershell
+   cd "c:\Users\TUF\Documents\Year3\Term 1\Cybersecurity\Project\anti_malicious_code"
+   ```
+
+2. Run the defender scanner:
+   ```powershell
+   python defender_scanner.py
+   ```
+
+3. **What happens:**
+   - Professional "Anti-Spyware Defender Scanner" GUI appears
+   - Click "START SCAN" to detect threats
+   - Scanner executes all 9 detection functions
+   - Displays detected threats in real-time console
+   - Click "QUARANTINE THREATS" to terminate processes and move files
+   - Click "REMOVE PERSISTENCE" to clean startup and registry
+   - Report saved to: `%TEMP%\AntiSpyware_Reports`
 
 ---
 
-### **2. Run the Defender (Detection Demo)**
+## 📋 FUNCTION DETAILS
+
+### **SPYWARE FUNCTIONS (Attack Side)**
+
+| # | Function | Purpose | Description |
+|---|----------|---------|-------------|
+| 1 | `function1_spyware_gui.py` | Delivery | Shows professional fake security scanner GUI |
+| 2 | `function2_install_spyware.py` | Delivery | Creates `SystemSecurityService` hidden folder |
+| 3 | `function3_hide_spyware.py` | Delivery | Copies to hidden location as `SecurityScanner.exe` |
+| 4 | `function4_collect_data.py` | Auto-Run | Collects system info, file lists, installed apps |
+| 5 | `function5_persistence_startup.py` | Auto-Run | Adds hidden shortcut to Startup folder |
+| 6 | `function6_persistence_registry.py` | Auto-Run | Adds registry Run key: `SystemSecurityScanner` |
+| 7 | `function7_scan_network.py` | Spreading | Scans network for accessible shares (simulated) |
+| 8 | `function8_spread_spyware.py` | Spreading | Replicates to network with social engineering names |
+| 9 | `function9_exfiltrate_report.py` | Spreading | Packages data and simulates email exfiltration |
+
+### **DEFENDER FUNCTIONS (Defense Side)**
+
+| # | Function | Purpose | Description |
+|---|----------|---------|-------------|
+| 1 | `function1_detect_spyware.py` | Anti-Delivery | Detects suspicious processes (SecurityScanner, etc.) |
+| 2 | `function2_scan_spyware_files.py` | Anti-Delivery | Scans AppData for `SystemSecurityService` folder |
+| 3 | `function3_quarantine_spyware.py` | Anti-Delivery | Terminates processes, moves to `SpywareQuarantine` |
+| 4 | `function4_detect_persistence.py` | Anti-Auto-Run | Scans Startup folder for spyware shortcuts |
+| 5 | `function5_scan_registry_spyware.py` | Anti-Auto-Run | Scans registry Run keys for spyware entries |
+| 6 | `function6_remove_spyware_persistence.py` | Anti-Auto-Run | Removes all persistence mechanisms |
+| 7 | `function7_monitor_exfiltration.py` | Anti-Spreading | Monitors for data exfiltration indicators |
+| 8 | `function8_block_spreading.py` | Anti-Spreading | Blocks spyware network spreading attempts |
+| 9 | `function9_generate_report.py` | Anti-Spreading | Generates comprehensive security scan report |
+
+---
+
+## 🎯 KEY FEATURES
+
+### **Spyware Side (spyware_main.py)**
+- ✅ Professional GUI mimicking legitimate security software
+- ✅ Progress bar with realistic scanning messages
+- ✅ Console output showing "Security Check" messages
+- ✅ All 9 functions execute during fake scan
+- ✅ Thread-based background execution
+- ✅ Window size: 1280x720 (optimized for VMware)
+
+### **Defender Side (defender_scanner.py)**
+- ✅ Professional anti-spyware scanner interface
+- ✅ Real-time threat detection console
+- ✅ Progress bar tracking scan phases
+- ✅ Color-coded status indicators (green/yellow/red)
+- ✅ Action buttons: START SCAN, QUARANTINE THREATS, REMOVE PERSISTENCE
+- ✅ Comprehensive JSON and text report generation
+- ✅ Window size: 1000x700
+
+---
+
+## 🔍 DEMONSTRATION FLOW
+
+### **Step 1: Show Clean System**
+1. Run defender_scanner.py
+2. Click "START SCAN"
+3. Result: "✓ System Clean - No threats detected"
+
+### **Step 2: Execute Spyware Attack**
+1. Run spyware_main.py
+2. Click "Start Security Scan"
+3. Wait for "Security scan complete!" message
+4. Spyware now installed with persistence
+
+### **Step 3: Detect Threats**
+1. Run defender_scanner.py again
+2. Click "START SCAN"
+3. Result: "⚠ WARNING: X threats detected!"
+4. Console shows:
+   - Suspicious processes detected
+   - Spyware files found
+   - Persistence mechanisms identified
+
+### **Step 4: Clean System**
+1. Click "QUARANTINE THREATS" button
+   - Terminates spyware processes
+   - Moves files to quarantine folder
+2. Click "REMOVE PERSISTENCE" button
+   - Removes startup shortcut
+   - Deletes registry key
+3. Result: "✓ System Clean"
+
+---
+
+## 📊 TECHNICAL SPECIFICATIONS
+
+### **Technologies Used**
+- **Language**: Python 3.x
+- **GUI Framework**: tkinter (native Windows interface)
+- **System Libraries**: psutil, winreg, os, shutil, json
+- **Threading**: Background execution for non-blocking operations
+
+### **System Requirements**
+- Windows 10/11 (VMware VM)
+- Python 3.7 or higher
+- psutil library: `pip install psutil`
+- Minimum 2GB RAM
+- 100MB free disk space
+
+### **Data Collected by Spyware** (Simulated)
+- System information (hostname, username, OS version)
+- File lists (Documents, Pictures, Desktop folders)
+- Installed applications list
+- Network configuration
+- All saved to JSON format
+
+### **Detection Mechanisms**
+- Process name matching (keywords: security, scanner, system)
+- File path scanning (AppData for hidden folders)
+- Registry key enumeration (Run keys)
+- Startup folder inspection
+- Data exfiltration file detection
+
+---
+
+## 🎓 EDUCATIONAL VALUE
+
+### **Attack Techniques Demonstrated**
+1. **Social Engineering**: Fake security software GUI
+2. **Stealth Installation**: Hidden folders and files
+3. **Persistence**: Multiple mechanisms (startup + registry)
+4. **Data Collection**: Comprehensive system profiling
+5. **Network Spreading**: Lateral movement simulation
+6. **Data Exfiltration**: Information theft demonstration
+
+### **Defense Techniques Demonstrated**
+1. **Process Monitoring**: Real-time suspicious process detection
+2. **File System Scanning**: Hidden folder discovery
+3. **Persistence Removal**: Cleaning auto-run mechanisms
+4. **Quarantine Operations**: Safe threat isolation
+5. **Network Protection**: Spread blocking
+6. **Incident Reporting**: Comprehensive documentation
+
+---
+
+## ⚠️ SAFETY NOTES
+
+### **Why This is Safe for Education**
+- ✅ **Simulated Actions**: Network spreading and exfiltration are simulated
+- ✅ **No Real Harm**: No actual data sent to external servers
+- ✅ **VM Environment**: Isolated from host system
+- ✅ **Easy Removal**: Defender scanner completely cleans system
+- ✅ **Educational Purpose**: Demonstrates concepts, not malicious intent
+
+### **Ethical Considerations**
+- 🔒 Run ONLY in controlled lab environment
+- 🔒 NEVER deploy on production systems
+- 🔒 NEVER use for malicious purposes
+- 🔒 VMware snapshot before testing
+- 🔒 Respect cybersecurity ethics and laws
+
+---
+
+## 📈 PROJECT COMPLETION STATUS
+
+✅ **100% COMPLETE**
+
+- [x] All 9 spyware functions implemented
+- [x] Professional spyware GUI (spyware_main.py)
+- [x] All 9 defender functions implemented
+- [x] Professional defender GUI (defender_scanner.py)
+- [x] Threat detection working
+- [x] Quarantine operations working
+- [x] Persistence removal working
+- [x] Report generation working
+- [x] No syntax errors
+- [x] VMware-ready
+
+**Ready for 80% submission to lecturer** ✓
+
+---
+
+## 📞 PROJECT INFORMATION
+
+**Course**: Year 3 - Term 1 - Cybersecurity  
+**Project Type**: Malicious Code Attack & Defense Demonstration  
+**Architecture**: 3 Purposes × 3 Functions = 9 Functions per side  
+**Environment**: VMware Windows Virtual Machine  
+**Language**: Python 3.x with tkinter GUI  
+
+---
+
+## 🎯 QUICK START GUIDE
+
+### **For Demonstration**
 
 ```powershell
+# 1. Install psutil
+pip install psutil
+
+# 2. Run spyware attack
+cd "c:\Users\TUF\Documents\Year3\Term 1\Cybersecurity\Project\malicious_code"
+python spyware_main.py
+# Click "Start Security Scan" and wait for completion
+
+# 3. Run defender scanner
+cd "..\anti_malicious_code"
 python defender_scanner.py
+# Click "START SCAN" to detect threats
+# Click "QUARANTINE THREATS" to remove
+# Click "REMOVE PERSISTENCE" to clean
+
+# 4. Verify clean system
+# Run defender_scanner.py again and scan
+# Should show: "✓ System Clean"
 ```
 
-**What happens:**
-1. Scans for suspicious processes
-2. Detects hidden folders in AppData
-3. Quarantines malicious files
-4. Removes startup shortcuts
-5. Removes registry keys
-6. Scans and cleans network shares (simulated)
-
-**Output:**
-- Detailed log of all detected threats
-- Actions taken to neutralize threats
-- Summary of quarantined/removed items
-
 ---
 
-### **3. Clean Up All Artifacts**
-
-```powershell
-python cleanup.py
-```
-
-**What it removes:**
-- Hidden folder: `%APPDATA%\WindowsUpdateService`
-- Startup shortcut: `WindowsUpdateService.lnk`
-- Registry key: `HKCU\...\Run\WindowsUpdateService`
-- Quarantine folder: `%TEMP%\MalwareQuarantine`
-
----
-
-## 🎯 9 Functions Breakdown
-
-### **Malicious Code Functions:**
-1. `show_email_gui()` - Display legitimate-looking interface
-2. `create_hidden_folder()` - Create hidden AppData folder
-3. `copy_to_hidden_location()` - Copy executable to hidden location
-4. `send_fake_email()` - Send email while triggering persistence
-5. `add_startup_shortcut()` - Add to Startup folder
-6. `add_registry_key()` - Add to registry Run key
-7. `scan_network_shares()` - Find accessible network shares
-8. `replicate_to_shares()` - Copy to network locations
-9. `log_and_cleanup()` - Log infection status
-
-### **Defender Functions:**
-1. `monitor_running_processes()` - Detect suspicious processes
-2. `scan_hidden_folders()` - Find hidden folders in AppData
-3. `analyze_and_quarantine()` - Terminate and quarantine threats
-4. `scan_startup_folder()` - Detect malicious shortcuts
-5. `scan_registry_run_keys()` - Find malicious registry entries
-6. `remove_persistence_mechanisms()` - Remove all persistence
-7. `monitor_network_file_copies()` - Watch network activity
-8. `scan_network_shares()` - Scan shares for malware
-9. `block_and_clean_network()` - Remove threats from network
-
----
-
-## 🔒 Safety Features
-
-- Network spreading is **simulated only** (no actual file copies to network)
-- All malicious actions are **logged and reversible**
-- Cleanup utility provided to remove all artifacts
-- Code is clearly labeled as educational
-
----
-
-## 📊 Demo Scenario
-
-### **Attack Flow:**
-1. Victim receives "Email Sender Utility.exe"
-2. Victim runs the program
-3. GUI appears asking for email
-4. Victim enters email and clicks send
-5. Email is sent (looks legitimate)
-6. Hidden actions occur in background
-7. Program closes normally
-8. Malware persists and spreads
-
-### **Defense Flow:**
-1. Defender scanner runs
-2. Detects GUI program creating hidden folders
-3. Identifies persistence mechanisms
-4. Quarantines malicious files
-5. Removes all persistence
-6. Blocks network spreading
-7. System is clean and protected
-
----
-
-## 🛠️ Requirements
-
-- **OS:** Windows 10/11
-- **Python:** 3.7+
-- **Dependencies:** 
-  ```powershell
-  pip install psutil
-  ```
-
----
-
-## 📝 Testing Instructions
-
-### **Recommended Testing Order:**
-1. Run `malicious_email_sender.py` first
-2. Wait for it to complete
-3. Run `defender_scanner.py` to detect and remove
-4. Run `cleanup.py` to ensure everything is removed
-
-### **Expected Results:**
-- Malicious code creates 4 artifacts (folder, exe, shortcut, registry key)
-- Defender detects and removes all 4 artifacts
-- Cleanup ensures nothing remains
-
----
-
-## ⚖️ Legal Disclaimer
-
-This code is provided for **educational purposes only** in controlled lab environments. 
-
-**You must NOT:**
-- Deploy this code on any system you don't own
-- Use it for malicious purposes
-- Distribute the malicious code to others
-- Test on production systems
-
-**By using this code, you agree:**
-- To use it only for educational purposes
-- To use it only in isolated lab environments
-- To take full responsibility for any misuse
-- To comply with all applicable laws
-
----
-
-## 👥 Project Team
-
-[Add your team members here]
-
----
-
-## 📄 License
-
-Educational use only. Not for distribution or commercial use.
-
----
-
-## 🎓 Learning Objectives
-
-This project demonstrates:
-1. How malware uses social engineering (fake GUI)
-2. Common persistence techniques (startup, registry)
-3. Network spreading mechanisms
-4. Detection techniques (process monitoring, file scanning)
-5. Remediation strategies (quarantine, removal)
-
----
-
-## 📞 Support
-
-For questions about this educational project, contact your instructor.
-
-**Do NOT use this code for any malicious purposes.**
+**END OF README**
