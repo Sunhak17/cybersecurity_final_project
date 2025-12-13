@@ -76,13 +76,29 @@ Project/
 ### **PREREQUISITE: VMware Environment**
 - ✅ Run ONLY in VMware virtual machine
 - ✅ Windows OS with Python 3.x installed
-- ✅ Install required library: `pip install psutil`
+- ✅ Install required libraries: `pip install psutil flask requests`
 
-### **Running the Spyware Attack**
+### **NEW: Real Data Exfiltration & Delivery**
+
+**Want to enable REAL data exfiltration to attacker server?**
+📖 **See: [`SETUP_GUIDE.md`](SETUP_GUIDE.md)** - Complete setup instructions
+
+**Want to deliver spyware via email/USB/download?**
+📖 **See: [`DELIVERY_METHODS.md`](DELIVERY_METHODS.md)** - All delivery techniques
+
+**Quick Setup (Real Exfiltration):**
+1. **Attacker machine**: `python attacker_server.py` (starts data receiver)
+2. **Update** `config.py` with attacker IP address
+3. **Build executable**: `python build_executable.py` (creates .exe for delivery)
+4. **Deploy** to victim machine (email, USB, download link)
+
+---
+
+### **Running the Spyware Attack (Basic)**
 
 1. Navigate to malicious_code directory:
    ```powershell
-   cd "c:\Users\TUF\Documents\Year3\Term 1\Cybersecurity\Project\malicious_code"
+   cd "c:\Users\TUF\Documents\Cyber\cybersecurity_final_project-master\malicious_code"
    ```
 
 2. Run the spyware main application:
@@ -97,6 +113,7 @@ Project/
    - Installs to: `%APPDATA%\SystemSecurityService`
    - Creates persistence: Startup shortcut + Registry key
    - Collects data: System info, files, apps → JSON
+   - **NEW:** Sends data to attacker server (if configured)
    - Simulates: Network scanning and data exfiltration
 
 ### **Running the Defense Scanner**

