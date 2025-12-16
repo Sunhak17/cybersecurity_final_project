@@ -7,12 +7,12 @@
 
 ## PROJECT OVERVIEW
 
-This project demonstrates comprehensive spyware attack techniques and their corresponding defense mechanisms. It maintains a strict 3x3 structure: **3 purposes × 3 functions = 9 functions** on both attack and defense sides.
+This project demonstrates comprehensive spyware attack techniques and their corresponding defense mechanisms. The attack side implements **10 functions** across 3 purposes (delivery, auto-run, spreading), while the defense side implements **9 functions** to counter each attack vector.
 
 ### 📊 Attack Scenario: Professional Spyware
-- **Delivery**: Victim receives fake "System Security Scanner" with professional GUI
-- **Auto-Run (Data Collection)**: Spyware collects system info, files, installed apps
-- **Spreading**: Data exfiltration and network propagation
+- **Delivery**: Victim receives fake "System Security Scanner" with professional GUI (functions 2-3)
+- **Auto-Run (Data Collection)**: Spyware collects system info, encrypts files, establishes persistence (functions 4-6, 10)
+- **Spreading**: Network scanning, data exfiltration to attacker server, network propagation (functions 7-9)
 
 ### 🛡️ Defense Scenario: Anti-Spyware Scanner
 - **Anti-Delivery**: Detects spyware processes and malicious files
@@ -30,15 +30,18 @@ Project/
 │   ├── spyware_main.py                # Main spyware executable (professional GUI)
 │   │
 │   ├── delivery/                      # PURPOSE 1: DELIVERY
-│   │   ├── technique1/
-│   │   │   └── function1_spyware_gui.py         # Function 1: Fake security GUI
-│   │   └── technique2/
+│   │   ├── fake_update_notification.py          # Fake update GUI
+│   │   └── delivery_technique1/
 │   │       ├── function2_install_spyware.py     # Function 2: Install to hidden folder
-│   │       └── function3_hide_spyware.py        # Function 3: Hide executable
+│   │       ├── function3_hide_spyware.py        # Function 3: Hide executable
+│   │       ├── auto_send_phishing_direct_download.py  # Phishing delivery
+│   │       ├── setup_delivery.py                # Delivery setup script
+│   │       └── WindowsUpdate.exe                # Built executable
 │   │
 │   ├── auto_run/                      # PURPOSE 2: AUTO-RUN (DATA COLLECTION)
 │   │   ├── technique1/
-│   │   │   └── function4_collect_data.py        # Function 4: Collect victim data
+│   │   │   ├── function4_collect_data.py        # Function 4: Collect victim data
+│   │   │   └── function10_encrypt_files.py      # Function 10: Encrypt collected files
 │   │   └── technique2/
 │   │       ├── function5_persistence_startup.py # Function 5: Startup folder
 │   │       └── function6_persistence_registry.py# Function 6: Registry key
@@ -50,23 +53,32 @@ Project/
 │           ├── function8_spread_spyware.py      # Function 8: Network replication
 │           └── function9_exfiltrate_report.py   # Function 9: Data exfiltration
 │
-└── anti_malicious_code/               # DEFENSE SIDE
-    ├── defender_scanner.py            # Main defender GUI (comprehensive scanner)
-    │
-    ├── anti_delivery/                 # PURPOSE 1: ANTI-DELIVERY
-    │   ├── function1_detect_spyware.py          # Function 1: Process detection
-    │   ├── function2_scan_spyware_files.py      # Function 2: File scanning
-    │   └── function3_quarantine_spyware.py      # Function 3: Quarantine threats
-    │
-    ├── anti_auto_run/                 # PURPOSE 2: ANTI-AUTO-RUN
-    │   ├── function4_detect_persistence.py      # Function 4: Startup detection
-    │   ├── function5_scan_registry_spyware.py   # Function 5: Registry scanning
-    │   └── function6_remove_spyware_persistence.py # Function 6: Remove persistence
-    │
-    └── anti_spreading/                # PURPOSE 3: ANTI-SPREADING
-        ├── function7_monitor_exfiltration.py    # Function 7: Monitor exfiltration
-        ├── function8_block_spreading.py         # Function 8: Block spreading
-        └── function9_generate_report.py         # Function 9: Security report
+├── anti_malicious_code/               # DEFENSE SIDE
+│   ├── defender_scanner.py            # Main defender GUI (comprehensive scanner)
+│   │
+│   ├── anti_delivery/                 # PURPOSE 1: ANTI-DELIVERY
+│   │   ├── function1_detect_spyware.py          # Function 1: Process detection
+│   │   ├── function2_scan_spyware_files.py      # Function 2: File scanning
+│   │   ├── function3_quarantine_spyware.py      # Function 3: Quarantine threats
+│   │   └── decryption_tool.py                   # Decryption utility
+│   │
+│   ├── anti_auto_run/                 # PURPOSE 2: ANTI-AUTO-RUN
+│   │   ├── function4_detect_persistence.py      # Function 4: Startup detection
+│   │   ├── function5_scan_registry_spyware.py   # Function 5: Registry scanning
+│   │   └── function6_remove_spyware_persistence.py # Function 6: Remove persistence
+│   │
+│   └── anti_spreading/                # PURPOSE 3: ANTI-SPREADING
+│       ├── function7_monitor_exfiltration.py    # Function 7: Monitor exfiltration
+│       ├── function8_block_spreading.py         # Function 8: Block spreading
+│       └── function9_generate_report.py         # Function 9: Security report
+│
+├── server/                            # ATTACKER SERVER
+│   ├── attacker_server.py             # Flask server to receive exfiltrated data
+│   └── config.py                      # Server configuration (IP/port settings)
+│
+└── received_victim_data/              # RECEIVED DATA FROM VICTIMS
+    ├── victim_*.json                  # Victim data files
+    └── DESKTOP-*_files/               # Exfiltrated files from victims
 ```
 
 ---
@@ -78,19 +90,36 @@ Project/
 - ✅ Windows OS with Python 3.x installed
 - ✅ Install required libraries: `pip install psutil flask requests`
 
-### **NEW: Real Data Exfiltration & Delivery**
+### **Real Data Exfiltration & Delivery Setup**
 
-**Want to enable REAL data exfiltration to attacker server?**
-📖 **See: [`SETUP_GUIDE.md`](SETUP_GUIDE.md)** - Complete setup instructions
+**Enable REAL data exfiltration to attacker server:**
 
-**Want to deliver spyware via email/USB/download?**
-📖 **See: [`DELIVERY_METHODS.md`](DELIVERY_METHODS.md)** - All delivery techniques
+1. **Start attacker server** on attacker machine:
+   ```powershell
+   cd server
+   python attacker_server.py
+   ```
+   Note the IP address displayed (e.g., 192.168.1.100)
 
-**Quick Setup (Real Exfiltration):**
-1. **Attacker machine**: `python attacker_server.py` (starts data receiver)
-2. **Update** `config.py` with attacker IP address
-3. **Build executable**: `python build_executable.py` (creates .exe for delivery)
-4. **Deploy** to victim machine (email, USB, download link)
+2. **Configure attacker URL** in `server/config.py`:
+   ```python
+   ATTACKER_URL = "http://192.168.1.100:5555/receive"  # Use your IP
+   USE_REAL_EXFILTRATION = True
+   ```
+
+3. **Build executable** (optional, for delivery):
+   ```powershell
+   cd malicious_code
+   pyinstaller WindowsUpdate.spec
+   ```
+   Creates `WindowsUpdate.exe` in `dist/` folder
+
+4. **Delivery options:**
+   - Direct execution: Run `spyware_main.py`
+   - Phishing: Use `delivery/delivery_technique1/setup_delivery.py`
+   - USB/Email: Deploy `WindowsUpdate.exe` to victim
+
+5. **Receive data:** Victim data appears in `received_victim_data/` folder on attacker machine
 
 ---
 
@@ -145,15 +174,16 @@ Project/
 
 | # | Function | Purpose | Description |
 |---|----------|---------|-------------|
-| 1 | `function1_spyware_gui.py` | Delivery | Shows professional fake security scanner GUI |
+| 1 | GUI in `spyware_main.py` | Delivery | Shows professional fake security scanner GUI |
 | 2 | `function2_install_spyware.py` | Delivery | Creates `SystemSecurityService` hidden folder |
 | 3 | `function3_hide_spyware.py` | Delivery | Copies to hidden location as `SecurityScanner.exe` |
 | 4 | `function4_collect_data.py` | Auto-Run | Collects system info, file lists, installed apps |
 | 5 | `function5_persistence_startup.py` | Auto-Run | Adds hidden shortcut to Startup folder |
 | 6 | `function6_persistence_registry.py` | Auto-Run | Adds registry Run key: `SystemSecurityScanner` |
-| 7 | `function7_scan_network.py` | Spreading | Scans network for accessible shares (simulated) |
+| 7 | `function7_scan_network.py` | Spreading | Scans network for accessible shares |
 | 8 | `function8_spread_spyware.py` | Spreading | Replicates to network with social engineering names |
-| 9 | `function9_exfiltrate_report.py` | Spreading | Packages data and simulates email exfiltration |
+| 9 | `function9_exfiltrate_report.py` | Spreading | Exfiltrates data to attacker server via HTTP POST |
+| 10 | `function10_encrypt_files.py` | Auto-Run | Encrypts collected data for secure exfiltration |
 
 ### **DEFENDER FUNCTIONS (Defense Side)**
 
@@ -231,21 +261,27 @@ Project/
 - **Language**: Python 3.x
 - **GUI Framework**: tkinter (native Windows interface)
 - **System Libraries**: psutil, winreg, os, shutil, json
+- **Web Framework**: Flask (attacker server)
+- **HTTP Client**: requests (data exfiltration)
 - **Threading**: Background execution for non-blocking operations
 
 ### **System Requirements**
-- Windows 10/11 (VMware VM)
+- Windows 10/11 (VMware VM recommended)
 - Python 3.7 or higher
-- psutil library: `pip install psutil`
+- Required libraries: `pip install psutil flask requests cryptography`
 - Minimum 2GB RAM
 - 100MB free disk space
+- Network connectivity (for real exfiltration testing)
 
-### **Data Collected by Spyware** (Simulated)
+### **Data Collected by Spyware**
 - System information (hostname, username, OS version)
 - File lists (Documents, Pictures, Desktop folders)
 - Installed applications list
 - Network configuration
-- All saved to JSON format
+- Screenshot capability
+- Data encrypted and saved to JSON format
+- **Real exfiltration**: HTTP POST to attacker server (configurable in `config.py`)
+- Received data stored in `received_victim_data/` on attacker machine
 
 ### **Detection Mechanisms**
 - Process name matching (keywords: security, scanner, system)
@@ -279,11 +315,12 @@ Project/
 ## ⚠️ SAFETY NOTES
 
 ### **Why This is Safe for Education**
-- ✅ **Simulated Actions**: Network spreading and exfiltration are simulated
-- ✅ **No Real Harm**: No actual data sent to external servers
+- ✅ **Controlled Environment**: Real exfiltration only works within local network (VMware)
+- ✅ **No External Servers**: Data stays on your attacker server, not sent to internet
 - ✅ **VM Environment**: Isolated from host system
 - ✅ **Easy Removal**: Defender scanner completely cleans system
-- ✅ **Educational Purpose**: Demonstrates concepts, not malicious intent
+- ✅ **Educational Purpose**: Demonstrates real-world concepts in safe lab environment
+- ⚠️ **Note**: Real HTTP exfiltration is implemented but requires local server setup
 
 ### **Ethical Considerations**
 - 🔒 Run ONLY in controlled lab environment
@@ -294,60 +331,12 @@ Project/
 
 ---
 
-## 📈 PROJECT COMPLETION STATUS
-
-✅ **100% COMPLETE**
-
-- [x] All 9 spyware functions implemented
-- [x] Professional spyware GUI (spyware_main.py)
-- [x] All 9 defender functions implemented
-- [x] Professional defender GUI (defender_scanner.py)
-- [x] Threat detection working
-- [x] Quarantine operations working
-- [x] Persistence removal working
-- [x] Report generation working
-- [x] No syntax errors
-- [x] VMware-ready
-
-**Ready for 80% submission to lecturer** ✓
-
----
-
 ## 📞 PROJECT INFORMATION
 
 **Course**: Year 3 - Term 1 - Cybersecurity  
-**Project Type**: Malicious Code Attack & Defense Demonstration  
-**Architecture**: 3 Purposes × 3 Functions = 9 Functions per side  
+**Project Type**: Malicious Code Attack & Defense Demonstration   
 **Environment**: VMware Windows Virtual Machine  
-**Language**: Python 3.x with tkinter GUI  
 
----
 
-## 🎯 QUICK START GUIDE
+--- 
 
-### **For Demonstration**
-
-```powershell
-# 1. Install psutil
-pip install psutil
-
-# 2. Run spyware attack
-cd "c:\Users\TUF\Documents\Year3\Term 1\Cybersecurity\Project\malicious_code"
-python spyware_main.py
-# Click "Start Security Scan" and wait for completion
-
-# 3. Run defender scanner
-cd "..\anti_malicious_code"
-python defender_scanner.py
-# Click "START SCAN" to detect threats
-# Click "QUARANTINE THREATS" to remove
-# Click "REMOVE PERSISTENCE" to clean
-
-# 4. Verify clean system
-# Run defender_scanner.py again and scan
-# Should show: "✓ System Clean"
-```
-
----
-
-**END OF README**

