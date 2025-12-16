@@ -99,11 +99,11 @@ Project/
    cd server
    python attacker_server.py
    ```
-   Note the IP address displayed (e.g., 192.168.1.100)
+   Note the IP address displayed (e.g., 192.XXX.X.XXX)
 
 2. **Configure attacker URL** in `server/config.py`:
    ```python
-   ATTACKER_URL = "http://192.168.1.100:5555/receive"  # Use your IP
+   ATTACKER_URL = "http://XXX.XXX.X.XXX:5555/receive"  # Use your IP
    USE_REAL_EXFILTRATION = True
    ```
 
